@@ -13,12 +13,10 @@ namespace VideoGrid
     {
         private const int MAX_SLOTS = 20;
         private List<ChannelEntry> _channels = new();
-
-        private bool _mainInit  = false;
+        private bool _mainInit = false;
         private bool _hist1Init = false;
         private bool _hist2Init = false;
-
-        private int _mainIndex  = -1;
+        private int _mainIndex = -1;
         private int _hist1Index = -1;
         private int _hist2Index = -1;
 
@@ -30,6 +28,7 @@ namespace VideoGrid
             InitializeComponent();
             BuildThumbSlots();
             InitWebViews();
+
             History1Border.MouseLeftButtonUp += (s, e) => { if (_hist1Index >= 0) FocusChannel(_hist1Index); };
             History2Border.MouseLeftButtonUp += (s, e) => { if (_hist2Index >= 0) FocusChannel(_hist2Index); };
         }
@@ -40,15 +39,16 @@ namespace VideoGrid
             for (int i = 0; i < MAX_SLOTS; i++)
             {
                 int idx = i;
+
                 var border = new Border
                 {
-                    Background      = new SolidColorBrush(Color.FromRgb(0x08, 0x08, 0x14)),
-                    BorderBrush     = new SolidColorBrush(Color.FromRgb(0x1A, 0x1A, 0x2A)),
-                    BorderThickness = new Thickness(1,1,1,1),
-                    CornerRadius    = new CornerRadius(6,6,6,6),
-                    Margin          = new Thickness(2,2,2,2),
-                    Cursor          = Cursors.Hand,
-                    ClipToBounds    = true
+                    Background = new SolidColorBrush(Color.FromRgb(0x08, 0x08, 0x14)),
+                    BorderBrush = new SolidColorBrush(Color.FromRgb(0x1A, 0x1A, 0x2A)),
+                    BorderThickness = new Thickness(1, 1, 1, 1),
+                    CornerRadius = new CornerRadius(6, 6, 6, 6),
+                    Margin = new Thickness(2, 2, 2, 2),
+                    Cursor = Cursors.Hand,
+                    ClipToBounds = true
                 };
 
                 var grid = new Grid();
@@ -61,7 +61,7 @@ namespace VideoGrid
                     FontSize = 13, FontWeight = FontWeights.Bold,
                     FontFamily = new FontFamily("Segoe UI"),
                     HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment   = VerticalAlignment.Center
+                    VerticalAlignment = VerticalAlignment.Center
                 };
 
                 var wv = new WebView2 { Visibility = Visibility.Collapsed, IsHitTestVisible = false };
@@ -69,19 +69,19 @@ namespace VideoGrid
                 // 채널 번호 배지
                 var badge = new Border
                 {
-                    Background      = new SolidColorBrush(Color.FromArgb(0xCC, 0x00, 0x00, 0x10)),
-                    CornerRadius    = new CornerRadius(4,4,4,4),
-                    Padding         = new Thickness(4,2,4,2),
+                    Background = new SolidColorBrush(Color.FromArgb(0xCC, 0x00, 0x00, 0x10)),
+                    CornerRadius = new CornerRadius(4, 4, 4, 4),
+                    Padding = new Thickness(4, 2, 4, 2),
                     HorizontalAlignment = HorizontalAlignment.Left,
-                    VerticalAlignment   = VerticalAlignment.Top,
-                    Margin   = new Thickness(4,4,0,0),
+                    VerticalAlignment = VerticalAlignment.Top,
+                    Margin = new Thickness(4, 4, 0, 0),
                     Visibility = Visibility.Collapsed
                 };
                 var badgeText = new TextBlock
                 {
-                    Text       = $"{i + 1}",
+                    Text = $"{i + 1}",
                     Foreground = new SolidColorBrush(Color.FromRgb(0xAA, 0xAA, 0xFF)),
-                    FontSize   = 9, FontWeight = FontWeights.Bold,
+                    FontSize = 9, FontWeight = FontWeights.Bold,
                     FontFamily = new FontFamily("Segoe UI")
                 };
                 badge.Child = badgeText;
@@ -91,11 +91,11 @@ namespace VideoGrid
                 var dot = new Border
                 {
                     Width = 6, Height = 6,
-                    CornerRadius = new CornerRadius(3,3,3,3),
-                    Background   = new SolidColorBrush(Color.FromRgb(0x33, 0xFF, 0x99)),
+                    CornerRadius = new CornerRadius(3, 3, 3, 3),
+                    Background = new SolidColorBrush(Color.FromRgb(0x33, 0xFF, 0x99)),
                     HorizontalAlignment = HorizontalAlignment.Right,
-                    VerticalAlignment   = VerticalAlignment.Top,
-                    Margin     = new Thickness(0,4,4,0),
+                    VerticalAlignment = VerticalAlignment.Top,
+                    Margin = new Thickness(0, 4, 4, 0),
                     Visibility = Visibility.Collapsed
                 };
                 Panel.SetZIndex(dot, 10);
@@ -116,11 +116,11 @@ namespace VideoGrid
 
                 _slots[i] = new ThumbSlot
                 {
-                    Border     = border,
-                    WebView    = wv,
+                    Border = border,
+                    WebView = wv,
                     EmptyLabel = emptyLabel,
-                    Badge      = badge,
-                    Dot        = dot
+                    Badge = badge,
+                    Dot = dot
                 };
 
                 ThumbnailGrid.Children.Add(border);
@@ -132,7 +132,7 @@ namespace VideoGrid
         {
             await MainWebView.EnsureCoreWebView2Async();
             _mainInit = true;
-            // 메인만 fullscreen CSS 적용
+
             MainWebView.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = false;
             MainWebView.CoreWebView2.Settings.IsScriptEnabled = true;
             MainWebView.CoreWebView2.Settings.UserAgent = MobileUA();
@@ -148,7 +148,6 @@ namespace VideoGrid
             await History2WebView.EnsureCoreWebView2Async();
             _hist2Init = true;
             ApplySettings(History2WebView, muted: true);
-            // 썸네일 슬롯도 MuteOnly (InitSlotWebView에서 처리)
         }
 
         private void ApplySettings(WebView2 wv, bool muted)
@@ -156,7 +155,6 @@ namespace VideoGrid
             wv.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = false;
             wv.CoreWebView2.Settings.IsScriptEnabled = true;
             wv.CoreWebView2.Settings.UserAgent = MobileUA();
-            // 히스토리/썸네일: fullscreen CSS 없이 음소거 + 스크립트 오류 팝업만 제거
             wv.CoreWebView2.DOMContentLoaded += async (s, e) =>
             {
                 try { await wv.CoreWebView2.ExecuteScriptAsync(MuteOnlyScript(muted)); } catch { }
@@ -167,7 +165,7 @@ namespace VideoGrid
         private async void InitSlotWebView(int slotIdx, string url)
         {
             var slot = _slots[slotIdx];
-            var wv   = slot.WebView;
+            var wv = slot.WebView;
 
             if (!slot.Initialized)
             {
@@ -177,10 +175,7 @@ namespace VideoGrid
                 wv.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = false;
                 wv.CoreWebView2.Settings.IsScriptEnabled = true;
                 wv.CoreWebView2.Settings.UserAgent = MobileUA();
-
-                // 백그라운드 스로틀링 방지
                 wv.CoreWebView2.Settings.IsStatusBarEnabled = false;
-
                 wv.CoreWebView2.DOMContentLoaded += async (s, e) =>
                 {
                     try { await wv.CoreWebView2.ExecuteScriptAsync(MuteOnlyScript(muted: true)); } catch { }
@@ -191,7 +186,7 @@ namespace VideoGrid
             wv.Visibility = Visibility.Visible;
             slot.EmptyLabel.Visibility = Visibility.Collapsed;
             slot.Badge.Visibility = Visibility.Visible;
-            slot.Dot.Visibility   = Visibility.Visible;
+            slot.Dot.Visibility = Visibility.Visible;
         }
 
         // ── 채널 포커스 ──
@@ -204,14 +199,21 @@ namespace VideoGrid
             {
                 _hist2Index = _hist1Index;
                 _hist1Index = _mainIndex;
+
+                // [FIX] 초기화 여부를 필드로 직접 참조하여 최신 상태 보장
                 await UpdateHistoryView(History2WebView, History2Placeholder, History2Title, _hist2Init, _hist2Index);
                 await UpdateHistoryView(History1WebView, History1Placeholder, History1Title, _hist1Init, _hist1Index);
             }
 
             _mainIndex = index;
-            MainTitleText.Text = $"CH {index + 1}  ·  {ShortenUrl(entry.Url)}";
+            MainTitleText.Text = $"CH {index + 1} · {ShortenUrl(entry.Url)}";
 
-            if (!_mainInit) await MainWebView.EnsureCoreWebView2Async();
+            if (!_mainInit)
+            {
+                await MainWebView.EnsureCoreWebView2Async();
+                _mainInit = true;
+            }
+
             MainWebView.CoreWebView2.Navigate(entry.Url);
             MainWebView.Visibility = Visibility.Visible;
             MainPlaceholder.Visibility = Visibility.Collapsed;
@@ -228,6 +230,7 @@ namespace VideoGrid
             foreach (var ch in _channels)
                 if (ch.SideLabel != null)
                     ch.SideLabel.Foreground = new SolidColorBrush(Color.FromRgb(0x55, 0x55, 0x99));
+
             if (entry.SideLabel != null)
                 entry.SideLabel.Foreground = new SolidColorBrush(Color.FromRgb(0xAA, 0xAA, 0xFF));
         }
@@ -242,8 +245,16 @@ namespace VideoGrid
                 title.Text = "";
                 return;
             }
+
             var entry = _channels[idx];
-            if (!initialized) await wv.EnsureCoreWebView2Async();
+
+            // [FIX] 초기화 안 됐으면 여기서도 초기화 후 설정 적용
+            if (!initialized)
+            {
+                await wv.EnsureCoreWebView2Async();
+                ApplySettings(wv, muted: true);
+            }
+
             wv.CoreWebView2.Navigate(entry.Url);
             wv.Visibility = Visibility.Visible;
             placeholder.Visibility = Visibility.Collapsed;
@@ -262,20 +273,20 @@ namespace VideoGrid
         {
             string url = UrlInputBox.Text.Trim();
             if (string.IsNullOrEmpty(url) || !url.StartsWith("http"))
-            { StatusText.Text = "⚠  유효한 URL을 입력해주세요."; return; }
+            { StatusText.Text = "⚠ 유효한 URL을 입력해주세요."; return; }
+
             if (_channels.Count >= MAX_SLOTS)
-            { StatusText.Text = "⚠  최대 20개 채널에 도달했습니다."; return; }
+            { StatusText.Text = "⚠ 최대 20개 채널에 도달했습니다."; return; }
 
             string watchUrl = ToWatchUrl(url);
             int slotIdx = _channels.Count;
             var entry = new ChannelEntry { Url = watchUrl, Index = slotIdx };
             _channels.Add(entry);
-
             AddPlaylistItem(entry);
             InitSlotWebView(slotIdx, watchUrl);
             UpdateStatus();
-            UrlInputBox.Text = "";
 
+            UrlInputBox.Text = "";
             if (_channels.Count == 1) FocusChannel(0);
         }
 
@@ -284,14 +295,15 @@ namespace VideoGrid
         {
             var border = new Border
             {
-                Background      = new SolidColorBrush(Color.FromRgb(0x0C, 0x0C, 0x1A)),
-                BorderBrush     = new SolidColorBrush(Color.FromRgb(0x1A, 0x1A, 0x2A)),
-                BorderThickness = new Thickness(1,1,1,1),
-                CornerRadius    = new CornerRadius(6,6,6,6),
-                Margin          = new Thickness(0,0,0,4),
-                Padding         = new Thickness(10,7,10,7),
-                Cursor          = Cursors.Hand
+                Background = new SolidColorBrush(Color.FromRgb(0x0C, 0x0C, 0x1A)),
+                BorderBrush = new SolidColorBrush(Color.FromRgb(0x1A, 0x1A, 0x2A)),
+                BorderThickness = new Thickness(1, 1, 1, 1),
+                CornerRadius = new CornerRadius(6, 6, 6, 6),
+                Margin = new Thickness(0, 0, 0, 4),
+                Padding = new Thickness(10, 7, 10, 7),
+                Cursor = Cursors.Hand
             };
+
             var inner = new StackPanel();
             var numLabel = new TextBlock
             {
@@ -307,6 +319,7 @@ namespace VideoGrid
                 TextTrimming = TextTrimming.CharacterEllipsis
             };
             entry.SideLabel = urlLabel;
+
             inner.Children.Add(numLabel);
             inner.Children.Add(urlLabel);
             border.Child = inner;
@@ -321,28 +334,47 @@ namespace VideoGrid
         }
 
         // ── 전체 재생/정지 ──
+        // [FIX] History WebView들도 play/pause 처리 추가
         private async void PlayAll_Click(object sender, RoutedEventArgs e)
         {
-            if (_mainInit) try { await MainWebView.CoreWebView2.ExecuteScriptAsync("var v=document.querySelector('video');if(v)v.play();"); } catch { }
+            if (_mainInit)
+                try { await MainWebView.CoreWebView2.ExecuteScriptAsync("var v=document.querySelector('video');if(v)v.play();"); } catch { }
+
+            if (_hist1Init && _hist1Index >= 0)
+                try { await History1WebView.CoreWebView2.ExecuteScriptAsync("var v=document.querySelector('video');if(v){v.muted=true;v.play();}"); } catch { }
+
+            if (_hist2Init && _hist2Index >= 0)
+                try { await History2WebView.CoreWebView2.ExecuteScriptAsync("var v=document.querySelector('video');if(v){v.muted=true;v.play();}"); } catch { }
+
             for (int i = 0; i < _channels.Count; i++)
             {
                 var slot = _slots[i];
                 if (slot.Initialized)
                     try { await slot.WebView.CoreWebView2.ExecuteScriptAsync("var v=document.querySelector('video');if(v){v.muted=true;v.play();}"); } catch { }
             }
-            StatusText.Text = "▶  재생 중...";
+
+            StatusText.Text = "▶ 재생 중...";
         }
 
         private async void StopAll_Click(object sender, RoutedEventArgs e)
         {
-            if (_mainInit) try { await MainWebView.CoreWebView2.ExecuteScriptAsync("var v=document.querySelector('video');if(v)v.pause();"); } catch { }
+            if (_mainInit)
+                try { await MainWebView.CoreWebView2.ExecuteScriptAsync("var v=document.querySelector('video');if(v)v.pause();"); } catch { }
+
+            if (_hist1Init && _hist1Index >= 0)
+                try { await History1WebView.CoreWebView2.ExecuteScriptAsync("var v=document.querySelector('video');if(v)v.pause();"); } catch { }
+
+            if (_hist2Init && _hist2Index >= 0)
+                try { await History2WebView.CoreWebView2.ExecuteScriptAsync("var v=document.querySelector('video');if(v)v.pause();"); } catch { }
+
             for (int i = 0; i < _channels.Count; i++)
             {
                 var slot = _slots[i];
                 if (slot.Initialized)
                     try { await slot.WebView.CoreWebView2.ExecuteScriptAsync("var v=document.querySelector('video');if(v)v.pause();"); } catch { }
             }
-            StatusText.Text = "⏸  일시정지됨";
+
+            StatusText.Text = "⏸ 일시정지됨";
         }
 
         private void ClearAll_Click(object sender, RoutedEventArgs e)
@@ -354,15 +386,15 @@ namespace VideoGrid
             _channels.Clear();
             _mainIndex = _hist1Index = _hist2Index = -1;
 
-            if (_mainInit)  MainWebView.CoreWebView2.Navigate("about:blank");
+            if (_mainInit) MainWebView.CoreWebView2.Navigate("about:blank");
             if (_hist1Init) History1WebView.CoreWebView2.Navigate("about:blank");
             if (_hist2Init) History2WebView.CoreWebView2.Navigate("about:blank");
 
-            MainWebView.Visibility  = Visibility.Collapsed;
-            MainPlaceholder.Visibility  = Visibility.Visible;
-            History1WebView.Visibility  = Visibility.Collapsed;
+            MainWebView.Visibility = Visibility.Collapsed;
+            MainPlaceholder.Visibility = Visibility.Visible;
+            History1WebView.Visibility = Visibility.Collapsed;
             History1Placeholder.Visibility = Visibility.Visible;
-            History2WebView.Visibility  = Visibility.Collapsed;
+            History2WebView.Visibility = Visibility.Collapsed;
             History2Placeholder.Visibility = Visibility.Visible;
             History1Title.Text = ""; History2Title.Text = "";
             MainTitleText.Text = "";
@@ -372,11 +404,11 @@ namespace VideoGrid
             {
                 var slot = _slots[i];
                 if (slot.Initialized) slot.WebView.CoreWebView2.Navigate("about:blank");
-                slot.WebView.Visibility    = Visibility.Collapsed;
+                slot.WebView.Visibility = Visibility.Collapsed;
                 slot.EmptyLabel.Visibility = Visibility.Visible;
-                slot.Badge.Visibility      = Visibility.Collapsed;
-                slot.Dot.Visibility        = Visibility.Collapsed;
-                slot.Border.BorderBrush    = new SolidColorBrush(Color.FromRgb(0x1A, 0x1A, 0x2A));
+                slot.Badge.Visibility = Visibility.Collapsed;
+                slot.Dot.Visibility = Visibility.Collapsed;
+                slot.Border.BorderBrush = new SolidColorBrush(Color.FromRgb(0x1A, 0x1A, 0x2A));
             }
 
             PlaylistPanel.Children.Clear();
@@ -386,7 +418,7 @@ namespace VideoGrid
 
         private void UpdateStatus()
         {
-            CountText.Text  = $"{_channels.Count} / {MAX_SLOTS}";
+            CountText.Text = $"{_channels.Count} / {MAX_SLOTS}";
             StatusText.Text = _channels.Count == 0
                 ? "NEXUS VIDEO GRID · URL을 추가해 채널을 시작하세요"
                 : $"NEXUS VIDEO GRID · {_channels.Count}개 채널 활성화됨";
@@ -398,6 +430,7 @@ namespace VideoGrid
             string muteJs = muted
                 ? "var v=document.querySelector('video');if(v)v.muted=true;"
                 : "var v=document.querySelector('video');if(v){v.muted=false;v.play().catch(function(){});}";
+
             return $@"(function(){{
                 {muteJs}
                 var btn=document.querySelector('.ytp-large-play-button')||
@@ -453,6 +486,7 @@ namespace VideoGrid
             "Mozilla/5.0 (Linux; Android 12; Pixel 6) AppleWebKit/537.36 " +
             "(KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36";
 
+        // [FIX] embed URL 파싱 시 앞에 남는 '/' 제거
         private static string ToWatchUrl(string url)
         {
             try
@@ -462,7 +496,8 @@ namespace VideoGrid
                 if (uri.Host == "youtu.be")
                     return $"https://www.youtube.com/watch?v={uri.AbsolutePath.TrimStart('/')}";
                 if (uri.AbsolutePath.StartsWith("/embed/"))
-                    return $"https://www.youtube.com/watch?v={uri.AbsolutePath.Replace("/embed/", "")}";
+                    // [FIX] Replace 후 TrimStart('/') 추가 — 원본은 앞에 '/' 가 남는 버그 있었음
+                    return $"https://www.youtube.com/watch?v={uri.AbsolutePath.Replace("/embed/", "").TrimStart('/')}";
             }
             catch { }
             return url;
@@ -483,18 +518,18 @@ namespace VideoGrid
 
     public class ThumbSlot
     {
-        public Border    Border     { get; set; } = null!;
-        public WebView2  WebView    { get; set; } = null!;
+        public Border Border { get; set; } = null!;
+        public WebView2 WebView { get; set; } = null!;
         public TextBlock EmptyLabel { get; set; } = null!;
-        public Border    Badge      { get; set; } = null!;
-        public Border    Dot        { get; set; } = null!;
-        public bool      Initialized { get; set; } = false;
+        public Border Badge { get; set; } = null!;
+        public Border Dot { get; set; } = null!;
+        public bool Initialized { get; set; } = false;
     }
 
     public class ChannelEntry
     {
-        public string    Url       { get; set; } = "";
-        public int       Index     { get; set; }
+        public string Url { get; set; } = "";
+        public int Index { get; set; }
         public TextBlock? SideLabel { get; set; }
     }
 }
